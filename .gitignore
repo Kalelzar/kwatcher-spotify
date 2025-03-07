@@ -1,0 +1,5 @@
+*.json
+*.lib
+*.dll
+*zig-*
+*.~undo-tree~
