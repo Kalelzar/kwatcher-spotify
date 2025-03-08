@@ -18,7 +18,14 @@ const SingletonDependencies = struct {
                 .scopes = "user-read-playback-state",
             });
 
-            // TODO: Write the refresh token back into the config.
+            const newConfig = kwatcher_spotify.config.Config{
+                .spotify = .{
+                    .id = client.id,
+                    .secret = client.secret,
+                    .refresh_token = (client.auth.info orelse unreachable).refresh_token,
+                },
+            };
+            try kwatcher.config.findConfigFileToUpdate(newConfig, allocator, "spotify");
 
             self.client = client;
             return self.client.?;
@@ -32,9 +39,19 @@ const SingletonDependencies = struct {
         }
     }
 
-    pub fn status(client: *spotify.Client, arena: *kwatcher.mem.InternalArena) !kwatcher_spotify.schema.SpotifyStatus {
+    pub fn status(client: *spotify.Client, persistant: std.mem.Allocator, arena: *kwatcher.mem.InternalArena) !kwatcher_spotify.schema.SpotifyStatus {
         const allocator = arena.allocator();
-        const playback = try client.getPlaybackState(allocator);
+        const playback = try client.getPlaybackState(persistant);
+        if (std.time.timestamp() - client.auth.last_refresh < 30) {
+            const newConfig = kwatcher_spotify.config.Config{
+                .spotify = .{
+                    .id = client.id,
+                    .secret = client.secret,
+                    .refresh_token = (client.auth.info orelse unreachable).refresh_token,
+                },
+            };
+            try kwatcher.config.findConfigFileToUpdate(newConfig, allocator, "spotify");
+        }
         if (playback) |p| {
             defer p.deinit();
             return .{
@@ -67,6 +84,8 @@ const EventProvider = struct {
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
+    var singleton = SingletonDependencies{};
+    defer singleton.deinit(allocator);
 
     var server = try kwatcher.server.Server(
         "spotify",
@@ -76,7 +95,7 @@ pub fn main() !void {
         kwatcher_spotify.config.Config,
         routes,
         EventProvider,
-    ).init(allocator, .{});
+    ).init(allocator, singleton);
     defer server.deinit();
 
     try server.run();
