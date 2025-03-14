@@ -95,7 +95,7 @@ pub fn main() !void {
         kwatcher_spotify.config.Config,
         routes,
         EventProvider,
-    ).init(allocator, singleton);
+    ).init(allocator, &singleton);
     defer server.deinit();
 
     try server.start();
