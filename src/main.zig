@@ -25,7 +25,7 @@ const SingletonDependencies = struct {
                     .refresh_token = (client.auth.info orelse unreachable).refresh_token,
                 },
             };
-            try kwatcher.config.findConfigFileToUpdate(newConfig, allocator, "spotify");
+            try kwatcher.config.findConfigToUpdate(newConfig, allocator, "spotify");
 
             self.client = client;
             return self.client.?;
@@ -50,7 +50,7 @@ const SingletonDependencies = struct {
                     .refresh_token = (client.auth.info orelse unreachable).refresh_token,
                 },
             };
-            try kwatcher.config.findConfigFileToUpdate(newConfig, allocator, "spotify");
+            try kwatcher.config.findConfigToUpdate(newConfig, allocator, "spotify");
         }
         if (playback) |p| {
             defer p.deinit();
