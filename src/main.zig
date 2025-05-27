@@ -41,6 +41,7 @@ const SingletonDependencies = struct {
 
     pub fn status(client: *spotify.Client, persistant: std.mem.Allocator, arena: *kwatcher.mem.InternalArena) !kwatcher_spotify.schema.SpotifyStatus {
         const allocator = arena.allocator();
+        std.log.info("Before", .{});
         const playback = try client.getPlaybackState(persistant);
         if (std.time.timestamp() - client.auth.last_refresh < 30) {
             const newConfig = kwatcher_spotify.config.Config{
@@ -72,7 +73,7 @@ const SingletonDependencies = struct {
 const ScopedDependencies = struct {};
 
 const EventProvider = struct {
-    pub fn heartbeat(timer: kwatcher.server.Timer) !bool {
+    pub fn heartbeat(timer: kwatcher.Timer) !bool {
         return try timer.ready("heartbeat");
     }
 
@@ -93,6 +94,7 @@ pub fn main() !void {
         SingletonDependencies,
         ScopedDependencies,
         kwatcher_spotify.config.Config,
+        struct {},
         routes,
         EventProvider,
     ).init(allocator, &singleton);
