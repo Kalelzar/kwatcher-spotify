@@ -37,8 +37,8 @@
     // internet connectivity.
     .dependencies = .{
         .kwatcher = .{
-            .url = "git+https://github.com/Kalelzar/kwatcher#e11c7f0533a9675b26f6f140ce39be0a637aadfd",
-            .hash = "kwatcher-0.1.0-VYVPxjmiAwCtygOH1r7i4G-9TyhwWy3-WdDajHaPWcg3",
+            .url = "git+https://github.com/Kalelzar/kwatcher#3366b3cd430b53f4b16aa1f0faf98b9a00a972a9",
+            .hash = "kwatcher-0.1.0-VYVPxm2iAwDye42289bYUCgzMzyo_Oxbe9-SJWjrGOQc",
         },
         .zig_spotify_client = .{
             .url = "git+https://github.com/Kalelzar/zig-spotify-client.git#3641dc1733b8593add41285370902ea285bfb63b",
